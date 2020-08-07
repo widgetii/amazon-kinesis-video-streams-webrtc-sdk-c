@@ -282,8 +282,8 @@ STATUS onFrameReadyFunc(UINT64 customData, UINT16 startIndex, UINT16 endIndex, U
 
     CHK(pTransceiver != NULL, STATUS_NULL_ARG);
 
-    pPacket = pTransceiver->pJitterBuffer->pktBuffer[startIndex];
     // TODO: handle multi-packet frames
+    CHK_STATUS(hashTableGet(pTransceiver->pJitterBuffer->pPkgBufferHashTable, startIndex, (PUINT64) &pPacket));
     CHK(pPacket != NULL, STATUS_NULL_ARG);
     MUTEX_LOCK(pTransceiver->statsLock);
     // https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-jitterbufferdelay
@@ -327,7 +327,7 @@ STATUS onFrameDroppedFunc(UINT64 customData, UINT16 startIndex, UINT16 endIndex,
     PKvsRtpTransceiver pTransceiver = (PKvsRtpTransceiver) customData;
     DLOGW("Frame with timestamp %ld is dropped!", timestamp);
     CHK(pTransceiver != NULL, STATUS_NULL_ARG);
-    pPacket = pTransceiver->pJitterBuffer->pktBuffer[startIndex];
+    CHK_STATUS(hashTableGet(pTransceiver->pJitterBuffer->pPkgBufferHashTable, startIndex, (PUINT64) &pPacket));
     // TODO: handle multi-packet frames
     CHK(pPacket != NULL, STATUS_NULL_ARG);
     MUTEX_LOCK(pTransceiver->statsLock);
