@@ -2,8 +2,10 @@
 #include "../Include_i.h"
 
 mbedtls_ssl_srtp_profile DTLS_SRTP_SUPPORTED_PROFILES[] = {
-    MBEDTLS_SRTP_AES128_CM_HMAC_SHA1_80,
-    MBEDTLS_SRTP_AES128_CM_HMAC_SHA1_32,
+    //MBEDTLS_SRTP_AES128_CM_HMAC_SHA1_80,
+    //MBEDTLS_SRTP_AES128_CM_HMAC_SHA1_32,
+    MBEDTLS_SRTP_NULL_HMAC_SHA1_80,
+    //MBEDTLS_SRTP_NULL_HMAC_SHA1_32,
 };
 
 STATUS createDtlsSession(PDtlsSessionCallbacks pDtlsSessionCallbacks, TIMER_QUEUE_HANDLE timerQueueHandle, INT32 certificateBits,
@@ -489,12 +491,19 @@ STATUS dtlsSessionPopulateKeyingMaterial(PDtlsSession pDtlsSession, PDtlsKeyingM
     MEMCPY(pDtlsKeyingMaterial->serverWriteKey + MAX_SRTP_MASTER_KEY_LEN, &keyingMaterialBuffer[offset], MAX_SRTP_SALT_KEY_LEN);
 
     negotiatedSRTPProfile = mbedtls_ssl_get_dtls_srtp_protection_profile(&pDtlsSession->sslCtx);
+    printf("negotiatedSRTPProfile: %d\n\n\n\n", negotiatedSRTPProfile);
     switch (negotiatedSRTPProfile) {
         case MBEDTLS_SRTP_AES128_CM_HMAC_SHA1_80:
             pDtlsKeyingMaterial->srtpProfile = KVS_SRTP_PROFILE_AES128_CM_HMAC_SHA1_80;
             break;
         case MBEDTLS_SRTP_AES128_CM_HMAC_SHA1_32:
             pDtlsKeyingMaterial->srtpProfile = KVS_SRTP_PROFILE_AES128_CM_HMAC_SHA1_32;
+            break;
+	case MBEDTLS_SRTP_NULL_HMAC_SHA1_80:
+            pDtlsKeyingMaterial->srtpProfile = KVS_SRTP_PROFILE_NULL_HMAC_SHA1_80;
+            break;
+	case MBEDTLS_SRTP_NULL_HMAC_SHA1_32:
+            pDtlsKeyingMaterial->srtpProfile = KVS_SRTP_PROFILE_NULL_HMAC_SHA1_32;
             break;
         default:
             CHK(FALSE, STATUS_SSL_UNKNOWN_SRTP_PROFILE);

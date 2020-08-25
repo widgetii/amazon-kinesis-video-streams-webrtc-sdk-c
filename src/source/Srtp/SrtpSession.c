@@ -29,6 +29,15 @@ STATUS initSrtpSession(PBYTE receiveKey, PBYTE transmitKey, KVS_SRTP_PROFILE pro
             srtp_policy_setter = srtp_crypto_policy_set_rtp_default;
             srtcp_policy_setter = srtp_crypto_policy_set_rtp_default;
             break;
+        case KVS_SRTP_PROFILE_NULL_HMAC_SHA1_80:
+            srtp_policy_setter = srtp_crypto_policy_set_null_cipher_hmac_sha1_80;
+            srtcp_policy_setter = srtp_crypto_policy_set_rtp_default;
+            break;
+        case KVS_SRTP_PROFILE_NULL_HMAC_SHA1_32:
+	    //??
+            //srtp_policy_setter = srtp_crypto_policy_set_null_cipher_hmac_sha1_32;
+            srtcp_policy_setter = srtp_crypto_policy_set_rtp_default;
+            break;
         default:
             CHK(FALSE, STATUS_SSL_UNKNOWN_SRTP_PROFILE);
     }
